@@ -1,14 +1,13 @@
+use strict;
 package inc;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Cwd();
 use Config();
 
+my $corelists = {};
 my $plugins = {};
-my $inc;
-BEGIN {
-    $inc ||= [@INC];
-}
+my $inc = [@INC];
 
 sub import {
     my ($class) = shift;
@@ -30,6 +29,7 @@ sub create_list {
     my ($self) = shift;
     $self->{spec} = [@_];
     my $list = $self->{list} = [];
+    $self->{inc} = [@INC];
     while (my $next = $self->parse_spec(@_)) {
         my ($name, @args) = @$next;
         if ($name =~ m!/!) {
@@ -73,12 +73,37 @@ sub get_next_spec {
     return;
 }
 
+sub lookup {
+    my ($modpath, @inc) = @_;
+    for (@inc) {
+        my $path = "$_/$modpath";
+        if (-e $path) {
+            open my $fh, '<', $path
+                or die "Can't open '$path' for input:\n$!";
+            return $fh;
+        }
+    }
+    return;
+}
+
 #------------------------------------------------------------------------------
 # Smart Objects
 #------------------------------------------------------------------------------
 sub inc_core {
     my ($self, $version) = @_;
-    die "inc 'core' object not yet implemented";
+    $version ||= $Config::Config{version};
+    my $hash = $corelists->{$version} ||= do {
+        +{
+            split /\s+/, `corelist -v $version //`
+        }
+    };
+    return sub {
+        my ($self, $modpath) = @_;
+        (my $modname = $modpath) =~ s!/!::!g;
+        $modname =~ s!\.pm$!!;
+        return unless $hash->{$modname};
+        return lookup($modpath, @$inc);
+    }
 }
 
 sub inc_deps {
@@ -96,8 +121,13 @@ sub inc_dist {
     die "inc 'dist' object not yet implemented";
 }
 
+sub inc_perl5lib {
+    return () unless defined $ENV{PERL5LIB};
+    return split /:/, $ENV{PERL5LIB};
+}
+
 sub inc_lib {
-    return Cwd::cwd . '/lib';
+    return Cwd::abs_path('lib');
 }
 
 sub inc_blib {
@@ -105,6 +135,7 @@ sub inc_blib {
 }
 
 sub inc_inc {
+    my ($self) = @_;
     return @{$self->{inc}};
 }
 
@@ -133,6 +164,14 @@ sub inc_not {
 }
 
 sub inc_none {
+    return ();
+}
+
+sub inc_list {
+    my ($self) = @_;
+    for (@{$self->{list}}) {
+        print "$_\n";
+    }
     return ();
 }
 

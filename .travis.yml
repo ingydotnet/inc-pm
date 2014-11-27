@@ -21,6 +21,7 @@ perl:
 install:
 - cpanm --quiet --notest
   Devel::Cover::Report::Coveralls
+  Module::CoreList
 
 script:
 - test -e test &&

@@ -1,4 +1,10 @@
 ---
+version: 0.03
+date:    Thu Nov 27 01:05:51 PST 2014
+changes:
+- Implement the 'core' object
+- Implement 'list' object
+---
 version: 0.02
 date:    Wed Nov 26 23:24:58 PST 2014
 changes:

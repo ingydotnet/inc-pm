@@ -41,7 +41,7 @@ This is to allow easy usage loading `inc` using `-M`:
 
   perl -Minc=lib:core …
 
-== Smart Objects
+= Smart Objects
 
 This is a list of the smart objects that are predefined by the `inc` module:
 
@@ -65,6 +65,10 @@ This is a list of the smart objects that are predefined by the `inc` module:
 - `dist`
 
   Parse a [Dist::Zilla] `dist.ini` file for prereqs.
+
+- `perl5lib`
+
+  Expands to the paths in the PERL5LIB environment variable.
 
 - `lib`
 
@@ -106,6 +110,11 @@ This is a list of the smart objects that are predefined by the `inc` module:
 
   Use this to set `@INC` to the empty list. The `use inc …` statement requires
   at least one object, so this is needed to make it empty.
+
+- `list`
+
+  This is for debugging. Prints the @INC values that have been assembled so
+  far.
 
 - Directory Paths
 

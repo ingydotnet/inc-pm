@@ -50,7 +50,7 @@ This is to allow easy usage loading C<inc> using C<-M>:
 
     perl -Minc=lib:core …
 
-=head2 Smart Objects
+=head1 SMART OBJECTS
 
 This is a list of the smart objects that are predefined by the C<inc> module:
 
@@ -76,6 +76,10 @@ finds modules that are prereqs of those modules.
 =item C<dist>
 
 Parse a L<Dist::Zilla> C<dist.ini> file for prereqs.
+
+=item C<perl5lib>
+
+Expands to the paths in the PERL5LIB environment variable.
 
 =item C<lib>
 
@@ -117,6 +121,10 @@ Removes paths matching one or more regexes.
 
 Use this to set C<@INC> to the empty list. The C<use inc …> statement requires
 at least one object, so this is needed to make it empty.
+
+=item C<list>
+
+This is for debugging. Prints the @INC values that have been assembled so far.
 
 =item Directory Paths
 

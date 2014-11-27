@@ -1,7 +1,7 @@
 =meta: 0.0.2
 
 name: inc
-version: 0.02
+version: 0.03
 abstract: Smart @INC Processing
 homepage: https://metacpan.org/release/inc
 language: perl
@@ -23,3 +23,4 @@ devel:
 
 requires:
   perl: 5.8.1
+  Module::CoreList: 0
