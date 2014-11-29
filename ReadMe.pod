@@ -52,9 +52,24 @@ This is to allow easy usage loading C<inc> using C<-M>:
 
 =head1 SMART OBJECTS
 
-This is a list of the smart objects that are predefined by the C<inc> module:
+This is a list of the smart objects that are predefined by the C<inc> module
+(in alpha order):
 
 =over
+
+=item C<blib>
+
+Use the path values that C<blib.pm> would add.
+
+=item C<cache>
+
+Some of the smart objects can take long time to get their information. They
+might need to fetch information from the internet, for example. This object
+will save all the state into a file called C<./.perl-inc-cache>. You can
+override this filename by passing a value of your own as an argument.
+
+If the cache file exists it will be used. If not, values will be stored to it.
+To refresh the cache, simply delete the file.
 
 =item C<core>
 
@@ -62,32 +77,23 @@ Only finds the modules that are in core for the version of Perl that is
 running. You can give this a Perl version argument, and modules will be
 limited to the ones that were core for that version.
 
+=item C<cwd>
+
+Adds the absolute path of the current directory.
+
 =item C<deps>
 
 Only finds modules that are known prereqs of a module. Defaults to the
 module from which it was called. You can pass in the names of one or more
 modules to use.
 
-=item C<meta>
+=item C<dot>
 
-Only find modules listed as prereqs in C<META.json> or C<META.yaml>. Also
-finds modules that are prereqs of those modules.
+Adds C<< File::Spec->curdir >>. (Usually C<.>).
 
-=item C<dist>
+=item C<dzil>
 
-Parse a L<Dist::Zilla> C<dist.ini> file for prereqs.
-
-=item C<perl5lib>
-
-Expands to the paths in the PERL5LIB environment variable.
-
-=item C<lib>
-
-Expands to an absolute path of C<./lib>.
-
-=item C<blib>
-
-Use the path values that C<blib.pm> would add.
+Use Dist::Zilla's C<dzil listdeps> to find prereqs. Only find these modules.
 
 =item C<inc>
 
@@ -95,36 +101,53 @@ Expands to the value on C<@INC> prior to the execution of C<use inc …>.
 
 =item C<INC>
 
-Expands to the systems default @INC.
+Expands to the perl's default @INC.
 
-=item C<priv>
+=item C<lib>
 
-Adds C<privlib> and C<archlib> paths from the L<Config> module.
+Expands to an absolute path of C<./lib>.
 
-=item C<!priv>
+=item C<meta>
 
-Removes C<privlib> and C<archlib> paths from the L<Config> module.
-
-=item C<site>
-
-Adds C<sitelib> and C<sitearch> paths from the L<Config> module.
-
-=item C<!site>
-
-Removes C<sitelib> and C<sitearch> paths from the L<Config> module.
-
-=item C<< not=<regex-list> >>
-
-Removes paths matching one or more regexes.
+Only find modules listed as prereqs in C<META.json> or C<META.yaml>. Also
+finds modules that are prereqs of those modules.
 
 =item C<none>
 
 Use this to set C<@INC> to the empty list. The C<use inc …> statement requires
 at least one object, so this is needed to make it empty.
 
-=item C<list>
+=item C<< not=<regex> >>
+
+Removes paths that match the regex.
+
+=item C<perl5lib>
+
+Expands to the paths in the PERL5LIB environment variable.
+
+=item C<priv>
+
+Adds C<privlib> and C<archlib> paths from the L<Config> module.
+
+=item C<-priv>
+
+Removes C<privlib> and C<archlib> paths from the L<Config> module.
+
+=item C<show>
 
 This is for debugging. Prints the @INC values that have been assembled so far.
+
+=item C<site>
+
+Adds C<sitelib> and C<sitearch> paths from the L<Config> module.
+
+=item C<-site>
+
+Removes C<sitelib> and C<sitearch> paths from the L<Config> module.
+
+=item C<zild>
+
+Use Zilla::Dist's C<zild listdeps> to find prereqs. Only find these modules.
 
 =item Directory Paths
 
@@ -133,7 +156,7 @@ means you can do something like:
 
     use inc 'foo', @INC, 'bar';
 
-=item C<::Foo>
+=item C<::Foo> (Plugins)
 
 Use the C<inc::Plugin::Foo> module to look for smart objects. Objects will be
 searched in plugins first, then C<inc.pm>.

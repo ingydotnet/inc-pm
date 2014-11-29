@@ -1,4 +1,10 @@
 ---
+version: 0.04
+date:    Fri Nov 28 18:19:24 PST 2014
+changes:
+- Implement more objects
+- Write more tests
+---
 version: 0.03
 date:    Thu Nov 27 01:05:51 PST 2014
 changes:
