@@ -37,6 +37,12 @@ my $curdir = File::Spec->curdir;
     ;
 }
 
+{ # LC
+    my @inc = inc->list('LC');
+    is scalar(@inc), 1, "'LC' object returns one value";
+    is ref($inc[0]), 'CODE', "'LC' object returns a CODE ref";
+}
+
 { # lib
     my $want = $abs_lib;
     my @inc = inc->list('lib');

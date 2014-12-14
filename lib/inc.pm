@@ -1,6 +1,6 @@
 use strict;
 package inc;
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 use 5.008001;
 
@@ -57,6 +57,7 @@ sub create_list {
 sub parse_spec {
     my ($self) = @_;
     my $next = $self->get_next_spec or return;
+    return [$next] if $next =~ m!/!;
     die "Invalid spec string '$next'"
       unless $next =~ /^(\-?)(\w+)(?:=(.*))?$/;
     my $name = $2;
@@ -100,17 +101,30 @@ sub run_perl_eval {
     local $ENV{PERL5OPT};
 
     my $out = qx!$^X -e '$perl' @argv!;
-    return eval $out;
+    my $data = eval $out;
+    die $@ if $@;
+    return $data;
 }
 
 sub only_find {
     my ($self, $hash) = @_;
     return sub {
-        my ($self, $modpath) = @_;
+        my ($this, $modpath) = @_;
         (my $modname = $modpath) =~ s!/!::!g;
         $modname =~ s!\.pm$!!;
         return unless $hash->{$modname};
-        return lookup($modpath, @$INC);
+        return lookup($modpath, @{$self->{INC}});
+    }
+}
+
+sub regex_find {
+    my ($self, $regex) = @_;
+    return sub {
+        my ($this, $modpath) = @_;
+        (my $modname = $modpath) =~ s!/!::!g;
+        $modname =~ s!\.pm$!!;
+        return unless $modname =~ $regex;
+        return lookup($modpath, @{$self->{INC}});
     }
 }
 
@@ -172,8 +186,16 @@ sub inc_INC {
     return @{$self->{INC}};
 }
 
+sub inc_LC {
+    my ($self) = @_;
+    $self->inc_core('5.8.1');
+}
+
 sub inc_lib {
-    return Cwd::abs_path('lib');
+    return run_perl_eval <<'...';
+use Cwd;
+print q{"} . Cwd::abs_path(q{lib}) . q{"};
+...
 }
 
 sub inc_meta {
@@ -186,12 +208,20 @@ sub inc_none {
 }
 
 sub inc_not {
-    my ($self) = @_;
+    my ($self, @args) = @_;
     die "inc 'not' object requires one regex"
-        unless @_ == 1;
-    my $regex = qr/$_[0]/;
+        unless @args == 1;
+    my $regex = qr/$args[0]/;
     $self->{list} = [grep {ref or not($regex)} @{$self->{list}}];
     return ();
+}
+
+sub inc_ok {
+    my ($self, @args) = @_;
+    die "inc 'ok' object requires one regex"
+        unless @args == 1;
+    my $regex = qr/$args[0]/;
+    $self->regex_find($regex);
 }
 
 sub inc_perl5lib {

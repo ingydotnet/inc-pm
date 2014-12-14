@@ -103,6 +103,10 @@ Expands to the value on C<@INC> prior to the execution of C<use inc …>.
 
 Expands to the perl's default @INC.
 
+=item C<LC>
+
+Lancaster Core. Alias for C<core=5.8.1>
+
 =item C<lib>
 
 Expands to an absolute path of C<./lib>.
@@ -120,6 +124,11 @@ at least one object, so this is needed to make it empty.
 =item C<< not=<regex> >>
 
 Removes paths that match the regex.
+
+=item C<< ok=<regex> >>
+
+If the name of the module being loaded matches the regex, it will be loaded
+from the original C<@INC>.
 
 =item C<perl5lib>
 

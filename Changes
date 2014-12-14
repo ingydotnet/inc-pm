@@ -1,4 +1,10 @@
 ---
+version: 0.05
+date:    Sun Dec 14 13:17:05 PST 2014
+changes:
+- Add LC object
+- Fix some broken objects
+---
 version: 0.04
 date:    Fri Nov 28 18:19:24 PST 2014
 changes:
