@@ -1,10 +1,10 @@
 use strict;
 package inc;
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use 5.008001;
 
-use XXX;
+# use XXX;
 
 my $perl_init;
 my $perl_core;
